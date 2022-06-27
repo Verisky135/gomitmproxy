@@ -22,7 +22,7 @@ pipeline {
     }
   }
   stages {
-    stage("Quality Gate") {
+    stage("Semgrep Test") {
       steps {
         script {
             sh "semgrep --config http://sast.ftier.io/p/expr"
