@@ -7,7 +7,7 @@ pipeline {
         spec:
           containers:
           - name: semgrep
-            image: returntocorp/semgrep:latest
+            image: returntocorp/semgrep:0.100.0
             command:
             - sleep
             args:
