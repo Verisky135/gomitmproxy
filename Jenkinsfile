@@ -24,7 +24,7 @@ pipeline {
   stages {
     stage("Semgrep Test") {
       steps {
-        script {
+        containers ("semgrep") {
             sh "semgrep --config http://sast.ftier.io/p/expr"
         }
       }
