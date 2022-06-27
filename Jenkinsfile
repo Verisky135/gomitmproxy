@@ -31,8 +31,7 @@ pipeline {
     }
     stage("Build and Test") {
       steps {
-          echo ""
-        // checkout scm
+        checkout scm
         // container('go') {
         //   withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
         //     sh 'git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"'
@@ -71,7 +70,7 @@ pipeline {
         // }
       }
     }
-    
+
     stage("Quality Gate") {
       steps {
         script {
