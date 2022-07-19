@@ -25,7 +25,7 @@ pipeline {
     stage("Semgrep Test") {
       steps {
         container("semgrep") {
-            sh 'semgrep ci --config=http://sast.ftier.io/p/expr'
+            sh 'semgrep ci --config=https://configmap.astronauts.id/devops/semgrep/dev/rules.yaml'
         }
       }
     }
