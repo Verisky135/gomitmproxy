@@ -37,7 +37,7 @@ pipeline {
     stage("Semgrep Test") {
       steps {
         container("semgrep") {
-            sh 'semgrep --config=https://configmap.astronauts.id/devops/semgrep/dev/rules.yaml > gl-sast-report.json || true'
+            sh 'semgrep ci --config=https://configmap.astronauts.id/devops/semgrep/dev/rules.yaml > gl-sast-report.json || true'
         }
         container("go") {
           dir("semgrep-api-elastic") {
