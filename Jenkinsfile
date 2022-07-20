@@ -43,6 +43,7 @@ pipeline {
           dir("semgrep-api-elastic") {
             checkout([$class: 'GitSCM', branches: [[name: "main"]], userRemoteConfigs: [[url: 'https://github.com/wahyuhadi/semgrep-api-elastic']]])
             sh "go build"
+            sh "curl http://192.168.5.3:8888/elastic"
             sh "cat ../gl-sast-report.json | ./semgrep-to-elastic -r $GIT_URL"
           }
         }
