@@ -6,6 +6,18 @@ pipeline {
         kind: Pod
         spec:
           containers:
+          - name: go
+            image: golang:1.16
+            command:
+            - sleep
+            args:
+            - 999999
+            tty: true
+            resources:
+              limits: {}
+              requests:
+                memory: "100Mi"
+                cpu: "100m"
           - name: semgrep
             image: returntocorp/semgrep:0.100.0
             command:
@@ -25,7 +37,15 @@ pipeline {
     stage("Semgrep Test") {
       steps {
         container("semgrep") {
-            sh 'semgrep ci --config=https://configmap.astronauts.id/devops/semgrep/dev/rules.yaml'
+            sh 'semgrep --config=https://configmap.astronauts.id/devops/semgrep/dev/rules.yaml > gl-sast-report.json || true'
+        }
+        container("go") {
+          dir("semgrep-api-elastic") {
+            checkout([$class: 'GitSCM', branches: [[name: "main"]], userRemoteConfigs: [[url: 'https://github.com/wahyuhadi/semgrep-api-elastic']]])
+            sh 'go build'
+            echo "$GIT_URL"
+            //sh 'cat ../gl-sast-report.json | ./semgrep-to-elastic -r $GIT_URL'
+          }
         }
       }
     }

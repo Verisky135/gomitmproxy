@@ -1,0 +1,9 @@
+
+Findings:
+
+[36m[22m[24m  mitm/mitm.go [0m
+     [1m[24mhardcode-key-enc[0m
+        Key GenerateHMAC256 is hardcode in code, please use .env. Posible for internal intruder can
+        leaks the key
+
+         25┆ var [1m[24mSecretKey = "JzzE7uyqVnOTNm8izeWsBAs1t6rZfw5b"[0m
