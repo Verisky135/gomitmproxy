@@ -47,6 +47,7 @@ pipeline {
         // }
       }
     }
+    
     stage('Gosec Scan') {
       steps {
           echo ""
@@ -71,6 +72,7 @@ pipeline {
         // }
       }
     }
+    
     stage("Quality Gate") {
       steps {
         script {
