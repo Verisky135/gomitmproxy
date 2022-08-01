@@ -30,6 +30,18 @@ pipeline {
               requests:
                 memory: "100Mi"
                 cpu: "100m"
+          - name: semgrep-jenkins
+            image: asia-southeast2-docker.pkg.dev/dogwood-wharf-316804/base-image/astro-sast-semgrep-jenkins
+            command:
+            - sleep
+            args:
+            - 999999
+            tty: true
+            resources:
+              limits: {}
+              requests:
+                memory: "100Mi"
+                cpu: "100m"
         '''
     }
   }
@@ -37,12 +49,16 @@ pipeline {
     stage("Semgrep Test") {
       steps {
         container("semgrep") {
-            sh 'semgrep ci --json --config=http://sast.ftier.io/scan > gl-sast-report.json || true'
+            sh 'semgrep ci --json --config=https://configmap.astronauts.id/devops/semgrep/dev/rules.yaml > gl-sast-report.json || true'
         }
         container("go") {
           dir("semgrep-api-elastic") {
             checkout([$class: 'GitSCM', branches: [[name: "main"]], userRemoteConfigs: [[url: 'https://github.com/wahyuhadi/semgrep-api-elastic']]])
             sh "go build"
+          }
+        }
+        container("semgrep-jenkins") {
+          dir("semgrep-api-elastic") {
             sh "cat ../gl-sast-report.json | ./semgrep-to-elastic -r $GIT_URL -h $SEMGREP_API_URI -b true"
           }
         }
