@@ -51,12 +51,6 @@ pipeline {
         container("semgrep") {
             sh 'semgrep ci --json --config=https://configmap.astronauts.id/devops/semgrep/dev/rules.yaml > gl-sast-report.json || true'
         }
-        container("go") {
-          dir("semgrep-api-elastic") {
-            checkout([$class: 'GitSCM', branches: [[name: "main"]], userRemoteConfigs: [[url: 'https://github.com/wahyuhadi/semgrep-api-elastic']]])
-            sh "go build"
-          }
-        }
         container("semgrep-jenkins") {
           dir("semgrep-api-elastic") {
             sh "cat ../gl-sast-report.json | ./semgrep-to-elastic -r $GIT_URL -h $SEMGREP_API_URI -b true"
