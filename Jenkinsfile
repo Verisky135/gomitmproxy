@@ -33,7 +33,9 @@ pipeline {
           - name: semgrep-jenkins
             image: asia-southeast2-docker.pkg.dev/dogwood-wharf-316804/base-image/astro-sast-semgrep-jenkins
             command:
-            - cat
+            - sleep
+            args:
+            - 999999
             tty: true
             resources:
               limits: {}
@@ -47,7 +49,7 @@ pipeline {
     stage("Semgrep Test") {
       steps {
         container("semgrep") {
-            sh 'semgrep ci --json --config=https://configmap.astronauts.id/devops/semgrep/dev/rules.yaml > gl-sast-report.json || true'
+            sh 'semgrep ci --json --config=http://sast.ftier.io/scan > gl-sast-report.json || true'
         }
         container("semgrep-jenkins") {
             sh "cat ./gl-sast-report.json | /app/semgrep-to-elastic -r $GIT_URL -h $SEMGREP_API_URI -b true"
