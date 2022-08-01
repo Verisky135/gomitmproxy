@@ -33,9 +33,7 @@ pipeline {
           - name: semgrep-jenkins
             image: asia-southeast2-docker.pkg.dev/dogwood-wharf-316804/base-image/astro-sast-semgrep-jenkins
             command:
-            - sleep
-            args:
-            - 999999
+            - cat
             tty: true
             resources:
               limits: {}
