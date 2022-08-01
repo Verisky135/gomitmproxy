@@ -52,7 +52,7 @@ pipeline {
             sh 'semgrep ci --json --config=https://configmap.astronauts.id/devops/semgrep/dev/rules.yaml > gl-sast-report.json || true'
         }
         container("semgrep-jenkins") {
-            sh "cat ../gl-sast-report.json | /app/semgrep-to-elastic -r $GIT_URL -h $SEMGREP_API_URI -b true"
+            sh "cat ./gl-sast-report.json | /app/semgrep-to-elastic -r $GIT_URL -h $SEMGREP_API_URI -b true"
         }
       }
     }
