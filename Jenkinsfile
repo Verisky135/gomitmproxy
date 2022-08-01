@@ -53,7 +53,7 @@ pipeline {
         }
         container("semgrep-jenkins") {
           dir("semgrep-api-elastic") {
-            sh "cat ../gl-sast-report.json | ./semgrep-to-elastic -r $GIT_URL -h $SEMGREP_API_URI -b true"
+            sh "cat ../gl-sast-report.json | /app/semgrep-to-elastic -r $GIT_URL -h $SEMGREP_API_URI -b true"
           }
         }
       }
