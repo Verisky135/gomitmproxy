@@ -52,7 +52,9 @@ pipeline {
             sh 'semgrep ci --json --config=http://sast.ftier.io/scan > gl-sast-report.json || true'
         }
         container("semgrep-jenkins") {
-            sh "cat ./gl-sast-report.json | /app/semgrep-to-elastic -r $GIT_URL -h $SEMGREP_API_URI -b true"
+          withCredentials([string(credentialsId: 'semgrep-slack-webhook', variable: 'SEMGREP_SLACK_WEBHOOK')]) {
+            sh "cat ./gl-sast-report.json | /app/semgrep-to-elastic -w $SEMGREP_SLACK_WEBHOOK -r $GIT_URL -h $SEMGREP_API_URI -b true"
+          }
         }
       }
     }
