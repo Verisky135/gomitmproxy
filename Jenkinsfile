@@ -49,7 +49,8 @@ pipeline {
     stage("Semgrep Test") {
       steps {
         script {
-          sleep 30
+          echo "After first checkout"
+          sh 'ls -a'
         }
         container("semgrep") {
             sh 'semgrep ci --json --config=https://configmap.astronauts.id/devops/semgrep/dev/rules.yaml > gl-sast-report.json || true'
@@ -65,7 +66,8 @@ pipeline {
     stage("Build and Test") {
       steps {
         script {
-          sleep 30
+          echo "After semgrep"
+          sh 'ls -a'
         }
         checkout scm
         // container('go') {
@@ -80,6 +82,10 @@ pipeline {
         //   sh 'go build -v -o platform_location_be_grpc ./cmd/grpc/main.go'
         //   sh "USE_DOCKER_TEST=false go test -timeout=300s -coverprofile=cover.out -race -gcflags=all=-l ./..."
         // }
+        script {
+          echo "After second checkout"
+          sh 'ls -a'
+        }
       }
     }
     stage('Gosec Scan') {
