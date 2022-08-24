@@ -58,6 +58,7 @@ pipeline {
         container("semgrep-jenkins") {
           withCredentials([string(credentialsId: 'semgrep-slack-webhook', variable: 'SEMGREP_SLACK_WEBHOOK')]) {
             sh 'cat ./gl-sast-report.json | /app/astro-sast-semgrep-jenkins -w $SEMGREP_SLACK_WEBHOOK -r $GIT_URL -b true'
+            sh 'echo $SEMGREP_SLACK_WEBHOOK'
           }
         }
       }
@@ -69,7 +70,6 @@ pipeline {
           echo "After semgrep"
           sh 'ls -a'
         }
-        checkout scm
         // container('go') {
         //   withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
         //     sh 'git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"'
