@@ -48,6 +48,9 @@ pipeline {
   stages {
     stage("Semgrep Test") {
       steps {
+        script {
+          sleep 30
+        }
         container("semgrep") {
             sh 'semgrep ci --json --config=https://configmap.astronauts.id/devops/semgrep/dev/rules.yaml > gl-sast-report.json || true'
         }
@@ -61,6 +64,9 @@ pipeline {
     
     stage("Build and Test") {
       steps {
+        script {
+          sleep 30
+        }
         checkout scm
         // container('go') {
         //   withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
