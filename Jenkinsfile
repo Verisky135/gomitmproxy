@@ -43,7 +43,7 @@ pipeline {
                 memory: "100Mi"
                 cpu: "100m"
           - name: curl
-            image: curlimages/curl:latest
+            image: alpine/curl:latest
             command:
             - sleep
             args:
