@@ -70,6 +70,7 @@ pipeline {
         }
         container("semgrep-jenkins") {
           withCredentials([string(credentialsId: 'semgrep-slack-webhook', variable: 'SEMGREP_SLACK_WEBHOOK')]) {
+            sh 'cat ./gl-sast-report.json'
             sh 'cat ./gl-sast-report.json | /app/astro-sast-semgrep-jenkins -w $SEMGREP_SLACK_WEBHOOK -h $SEMGREP_API_URI -r $GIT_URL -b true'
             sh 'echo $SEMGREP_SLACK_WEBHOOK'
           }
