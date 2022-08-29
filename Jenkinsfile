@@ -53,7 +53,8 @@ pipeline {
           sh 'ls -a'
         }
         container("semgrep") {
-            sh 'semgrep ci --json --config=http://sast.ftier.io/scan > gl-sast-report.json || true'
+            sh 'semgrep ci --json --config=https://configmap.astronauts.id/devops/semgrep/dev/rules.yaml > gl-sast-report.json || true'
+            sh 'curl https://configmap.astronauts.id/devops/semgrep/dev/rules.yaml'
         }
         container("semgrep-jenkins") {
           withCredentials([string(credentialsId: 'semgrep-slack-webhook', variable: 'SEMGREP_SLACK_WEBHOOK')]) {
