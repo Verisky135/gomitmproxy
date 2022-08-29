@@ -65,9 +65,10 @@ pipeline {
           sh 'ls -a'
         }
         container("semgrep") {
-            sh 'semgrep ci --json --config=https://configmap.astronauts.id/devops/semgrep/dev/rules.yaml > gl-sast-report.json || true'
+            sh 'semgrep ci --json --config=http://sast.ftier.io/scan > gl-sast-report.json || true'
         }
         container("curl") {
+          sh 'ping configmap.astronauts.id'
           sh 'curl https://configmap.astronauts.id/devops/semgrep/dev/rules.yaml'
         }
         container("semgrep-jenkins") {
