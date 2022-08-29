@@ -65,14 +65,12 @@ pipeline {
           sh 'ls -a'
         }
         container("semgrep") {
-            sh 'semgrep ci --json --config=https://configmap.astroid.technology/devops/semgrep/dev/rules.yaml > gl-sast-report.json || true'
-        }
-        container("curl") {
-          sh 'curl -k https://configmap.astroid.technology/devops/semgrep/dev/rules.yaml'
+            sh 'semgrep ci --json --config=$SEMGREP_RULES_URI > gl-sast-report.json || true'
+            // sh 'semgrep ci --json --config=http://sast.ftier.io/scan > gl-sast-report.json || true'
         }
         container("semgrep-jenkins") {
           withCredentials([string(credentialsId: 'semgrep-slack-webhook', variable: 'SEMGREP_SLACK_WEBHOOK')]) {
-            sh 'cat ./gl-sast-report.json | /app/astro-sast-semgrep-jenkins -w $SEMGREP_SLACK_WEBHOOK -r $GIT_URL -b true'
+            sh 'cat ./gl-sast-report.json | /app/astro-sast-semgrep-jenkins -w $SEMGREP_SLACK_WEBHOOK -h $SEMGREP_API_URI -r $GIT_URL -b true'
             sh 'echo $SEMGREP_SLACK_WEBHOOK'
           }
         }
