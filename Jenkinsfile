@@ -6,8 +6,44 @@ pipeline {
         kind: Pod
         spec:
           containers:
+          - name: go
+            image: golang:1.16
+            command:
+            - sleep
+            args:
+            - 999999
+            tty: true
+            resources:
+              limits: {}
+              requests:
+                memory: "100Mi"
+                cpu: "100m"
           - name: semgrep
-            image: returntocorp/semgrep:latest
+            image: returntocorp/semgrep:0.100.0
+            command:
+            - sleep
+            args:
+            - 999999
+            tty: true
+            resources:
+              limits: {}
+              requests:
+                memory: "100Mi"
+                cpu: "100m"
+          - name: semgrep-jenkins
+            image: asia-southeast2-docker.pkg.dev/dogwood-wharf-316804/base-image/astro-sast-semgrep-jenkins
+            command:
+            - sleep
+            args:
+            - 999999
+            tty: true
+            resources:
+              limits: {}
+              requests:
+                memory: "100Mi"
+                cpu: "100m"
+          - name: curl
+            image: alpine/curl:latest
             command:
             - sleep
             args:
@@ -22,17 +58,32 @@ pipeline {
     }
   }
   stages {
-    stage("Quality Gate") {
+    stage("Semgrep Test") {
       steps {
         script {
-            sh "semgrep --config http://sast.ftier.io/p/expr"
+          echo "After first checkout"
+          sh 'ls -a'
+        }
+        container("semgrep") {
+            sh 'semgrep ci --json --config=$SEMGREP_RULES_URI > gl-sast-report.json || true'
+            // sh 'semgrep ci --json --config=http://sast.ftier.io/scan > gl-sast-report.json || true'
+        }
+        container("semgrep-jenkins") {
+          withCredentials([string(credentialsId: 'semgrep-slack-webhook', variable: 'SEMGREP_SLACK_WEBHOOK')]) {
+            sh 'cat ./gl-sast-report.json'
+            sh 'cat ./gl-sast-report.json | /app/astro-sast-semgrep-jenkins -w $SEMGREP_SLACK_WEBHOOK -h $SEMGREP_API_URI -r $GIT_URL -b true'
+            sh 'echo $SEMGREP_SLACK_WEBHOOK'
+          }
         }
       }
     }
+    
     stage("Build and Test") {
       steps {
-          echo ""
-        // checkout scm
+        script {
+          echo "After semgrep"
+          sh 'ls -a'
+        }
         // container('go') {
         //   withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
         //     sh 'git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"'
@@ -45,6 +96,10 @@ pipeline {
         //   sh 'go build -v -o platform_location_be_grpc ./cmd/grpc/main.go'
         //   sh "USE_DOCKER_TEST=false go test -timeout=300s -coverprofile=cover.out -race -gcflags=all=-l ./..."
         // }
+        script {
+          echo "After second checkout"
+          sh 'ls -a'
+        }
       }
     }
     stage('Gosec Scan') {
@@ -71,6 +126,7 @@ pipeline {
         // }
       }
     }
+
     stage("Quality Gate") {
       steps {
         script {

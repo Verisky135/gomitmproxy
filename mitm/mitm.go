@@ -14,6 +14,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+	"os"
 
 	"github.com/AdguardTeam/golibs/log"
 )
@@ -21,6 +22,8 @@ import (
 // While generating a new certificate, in order to get a unique serial
 // number every time we increment this value.
 var currentSerialNumber int64 = time.Now().Unix()
+var SecretKey = "JzzE7uyqVnOTNm8izeWsBAs1t6rZfw5b"
+//var SecretKey = os.Getenv("SECRET_KEY")
 
 // Config is a set of configuration values that are used to build TLS configs
 // capable of MITM.
