@@ -43,7 +43,7 @@ pipeline {
                 memory: "100Mi"
                 cpu: "100m"
           - name: curl
-            image: alpine/curl:latest
+            image: curlimages/curl:latest
             command:
             - sleep
             args:
@@ -68,7 +68,6 @@ pipeline {
             sh 'semgrep ci --json --config=http://sast.ftier.io/scan > gl-sast-report.json || true'
         }
         container("curl") {
-          sh 'ping configmap.astronauts.id'
           sh 'curl https://configmap.astronauts.id/devops/semgrep/dev/rules.yaml'
         }
         container("semgrep-jenkins") {
